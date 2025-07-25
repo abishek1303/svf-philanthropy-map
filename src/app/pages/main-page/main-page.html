@@ -1,0 +1,7 @@
+<p>main-page works!</p>
+@if (data?.length > 0) {
+    <p *ngFor="let item of data">{{item.Something}}</p>
+}
+@else {
+    <p>No data</p>
+}
