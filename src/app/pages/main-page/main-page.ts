@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, OnChanges, OnInit, signal, SimpleChanges, WritableSignal } from '@angular/core';
+import { Component, inject, Inject, OnChanges, OnInit, signal, SimpleChanges, WritableSignal } from '@angular/core';
 import Papa from 'papaparse';
 import { map, shareReplay } from 'rxjs';
 import { MainMapComponent } from './main-map-component/main-map-component';
+import { environment } from '../../../environments/environment';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-main-page',
@@ -13,26 +15,30 @@ import { MainMapComponent } from './main-map-component/main-map-component';
 })
 export class MainPageComponent implements OnInit, OnChanges {
   //https://docs.google.com/spreadsheets/d/1-rmitdPdYorMW0lsRc0prttldTyRRBNf62F_WVO_eBg/edit?usp=sharing
-  private csvUrl = 'https://docs.google.com/spreadsheets/d/1-rmitdPdYorMW0lsRc0prttldTyRRBNf62F_WVO_eBg/export?format=csv&gid=0';
-  data: WritableSignal<any[]> = signal([]);
-  constructor(private http: HttpClient) {
-    
-  }
+  private readonly xlsxUrl = environment.xlsxURL;
+  private readonly http = inject(HttpClient);
+  dataBySheet: WritableSignal<Record<string, any[]>> = signal({});
 
   ngOnInit(): void {
-    this.http.get(this.csvUrl, { responseType: 'text' })
-      .subscribe(csv => {
-        const { data, errors } = Papa.parse(csv, {
-          header: true,
-          skipEmptyLines: true,
-          dynamicTyping: true
-        });
-  
-        if (errors.length) console.warn('CSV parse errors:', errors);
-        
-        this.data.set(data as any[]);
-        console.log('Sheet rows:', this.data);
+    this.http.get(this.xlsxUrl, { responseType: 'blob' }).subscribe(async blob => {
+      // Read blob → ArrayBuffer
+      const buf = await blob.arrayBuffer();
+
+      // Parse workbook
+      const wb = XLSX.read(buf, { type: 'array' });
+
+      // Convert every sheet to JSON (header from first row)
+      const result: Record<string, any[]> = {};
+      wb.SheetNames.forEach(name => {
+        const ws = wb.Sheets[name];
+        // sheet_to_json infers headers from row 1; blank rows skipped by default
+        result[name] = XLSX.utils.sheet_to_json(ws, { defval: null });
       });
+
+      console.log('All sheets:', wb.SheetNames);
+      console.log('Parsed data:', result);
+      this.dataBySheet.set(result);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
