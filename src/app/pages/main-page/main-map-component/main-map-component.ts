@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, createComponent, EnvironmentInjector, inject, OnInit, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Loader } from '@googlemaps/js-api-loader';
 import { style } from '../../../Models/map-styles';
+import { CountryOverlayComponent as ContinentOverlayComponent } from './child-components/continent-overlay/continent-overlay.component';
 type LayerSpec = {
   data: google.maps.Data;
   color: string;
@@ -23,10 +24,9 @@ const CONTINENT_CENTERS: Record<string, google.maps.LatLngLiteral> = {
   styleUrl: './main-map-component.scss'
 })
 export class MainMapComponent implements OnInit {
+  private readonly env = inject(EnvironmentInjector);
   map!: google.maps.Map;
-  constructor() {
-
-  }
+  
   
 layers = new Map<string, LayerSpec>();
 labels:any = {};
@@ -40,113 +40,41 @@ labels:any = {};
     this.map = new  Map(document.getElementById('map') as HTMLElement, {
       center: { lat: 0, lng: 0 },
       zoom: 3,
-      mapId: '767b05226169a189635536c0',
+      mapId: environment.mapId,
     });
-
-    this.LoadContinentGeoJson('northamerica','#2ac4db');
-    this.addContinentLabel('northamerica', '#2ac4db');
-    this.LoadContinentGeoJson('asia','#C85FFF');
-    this.LoadContinentGeoJson('southamerica','#07A784');
-    this.LoadContinentGeoJson('australia','#F9CB00');
+    const continentDataSets:any = environment.ContinentDataSets; //remember to create a type for this
+    environment.ContinentKeys.forEach(key => {
+      if(continentDataSets[key].visible){
+        this.LoadContinentGeoJson(continentDataSets[key].datasetID, continentDataSets[key].color);
+        this.addContinentLabel(key, continentDataSets[key].color);
+      }
+    });
   }
-  private LoadContinentGeoJson(name: string, color: string, zIndex = 0) {
-    const data = new google.maps.Data({ map: this.map });
+  private LoadContinentGeoJson(datasetID: string, color: string, zIndex = 0) {
+    const data = this.map.getDatasetFeatureLayer(datasetID);
     // Individual style per layer
-    data.setStyle({
+    data.style = {
       strokeColor: color,
       strokeWeight: 1.5,
       strokeOpacity: 0.9,
       fillColor: color,
-      fillOpacity: 0.75,
-      zIndex,
-    });
-  
-    // Load GeoJSON for JUST this layer
-    const url = `/GeoJsons/${name}.geo.json`;
-    data.loadGeoJson(url, null, (features) => {
-      // Optional: tag features for debugging or later filters
-      features.forEach(f => f.setProperty('continent', name));
-    });
-  
-    // Layer-specific interactions (hover/click) if you want
-    data.addListener('mouseover', (e:any) => {
-      data.overrideStyle(e.feature, { strokeWeight: 2.5, fillOpacity: 0.9 });
-    });
-    data.addListener('mouseout', (e:any) => {
-      data.revertStyle(e.feature);
-    });
-    data.addListener('click', (e:any) => {
-      // your click handler
-    });
-  
-    this.layers.set(name, { data, color, visible: true });
+      fillOpacity: 0.75
+    };
   }
   addContinentLabel(name: string, color: string) {
     const pos = CONTINENT_CENTERS[name];
     if (!pos) return;
-  
-    const el = document.createElement('div');
-    el.style.padding = '6px 10px';
-    el.style.borderRadius = '999px';
-    el.style.background = 'rgba(0,0,0,0.55)';
-    el.style.color = 'white';
-    el.style.fontWeight = '600';
-    el.style.fontSize = '14px';
-    el.style.letterSpacing = '0.5px';
-    el.style.pointerEvents = 'none';
-    el.style.border = `1px solid ${color}`;
-    el.innerHTML = `
-      <div style="
-  position: relative;
-  width: 300px;
-  background: linear-gradient(180deg, #0BA7B8, #088FA5);
-  color: white;
-  padding: 12px 16px;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-">
-
-
-
-  <!-- Header -->
-  <div style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  ">
-    <h3 style="margin: 0; font-size: 16px; font-weight: 600;">USA</h3>
-    <p style="margin: 0; font-size: 14px; opacity: 0.9;">$4,000,000 mil</p>
-  </div>
-
-  <!-- Footer -->
-  <div style="
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-size: 13px;
-  ">
-    <div style="display: flex; align-items: center; gap: 4px;">
-      <span style="font-size: 14px;">👥</span>
-      <span>45 Orgs</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 4px;">
-      <span style="font-size: 14px;">📈</span>
-      <span>45 Education</span>
-    </div>
-  </div>
-</div>
-
-    `;
-  
+    let comp = createComponent(ContinentOverlayComponent, {
+      environmentInjector: this.env
+    });
+    comp.setInput('color', color);
+    comp.setInput('colorTo', color);
+    comp.changeDetectorRef.detectChanges();
     const marker = new google.maps.marker.AdvancedMarkerElement({
       map: this.map,
       position: pos,
-      content: el,
+      content: comp.location.nativeElement as HTMLElement,
       zIndex: 999,
     });
-  
-    // keep a reference if you want to hide/show later
-    //this.labels.set(name, marker);
   }
-  
 }

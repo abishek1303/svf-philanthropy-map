@@ -1,0 +1,73 @@
+<div
+  class="relative w-[300px] rounded-[10px] text-white shadow-lg ring-1 ring-white/10 overflow-hidden"
+  [style.--from]="color"
+  [style.--to]="colorTo || color"
+>
+  <!-- Gradient background -->
+  <div
+    class="absolute inset-0"
+    style="background: linear-gradient(160deg, var(--from), var(--to));"
+  ></div>
+
+  <!-- Optional faint texture overlay -->
+  <div
+    class="absolute inset-0 opacity-15 pointer-events-none"
+    style="background-image: url('/assets/world-tex.png'); background-size: 180% 180%; background-position: right -40px top -10px; background-repeat: no-repeat;"
+  ></div>
+
+  <div class="relative p-4">
+
+
+    <!-- Country and amount -->
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="text-[15px] font-semibold leading-5">{{ name }}</div>
+        <div class="mt-0.5 text-[13px] font-semibold leading-4 opacity-95">
+          {{ amount }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="mt-2 flex items-center justify-between text-[12px] leading-4">
+      <div class="flex items-center gap-1.5">
+        <!-- users icon -->
+        <svg
+          class="h-4 w-4 opacity-90"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        <span class="font-medium">{{ orgs }} Orgs</span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <!-- trend icon -->
+        <svg
+          class="h-4 w-4 opacity-90"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 3v6h6" />
+          <path d="M3 9l7.5-7.5a1 1 0 0 1 1.4 0L21 10.6" />
+          <path d="M21 4v6h-6" />
+        </svg>
+        <span class="font-medium">{{ education }} Education</span>
+      </div>
+    </div>
+  </div>
+</div>
