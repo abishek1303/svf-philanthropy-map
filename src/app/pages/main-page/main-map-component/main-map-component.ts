@@ -69,6 +69,7 @@ labels:any = {};
     });
     comp.setInput('color', color);
     comp.setInput('colorTo', color);
+    comp.setInput('key', name);
     comp.changeDetectorRef.detectChanges();
     const marker = new google.maps.marker.AdvancedMarkerElement({
       map: this.map,

@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { DataService } from '../../../../../services/data.service';
+import { ContinentSheet } from '../../../../../Models/types/Continent.sheet';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-continent-overlay',
-  imports: [],
+  imports: [CurrencyPipe],
   standalone: true,
   templateUrl: './continent-overlay.component.html',
   styleUrl: './continent-overlay.component.scss',
@@ -15,18 +18,15 @@ export class CountryOverlayComponent {
   /** Gradient end color */
   @Input() colorTo?: string;
 
-  /** Rank number */
-  @Input() rank: number | string = 1;
 
   /** Country or region name */
-  @Input() name: string = 'USA';
+  @Input() key: string = 'northamerica';
 
-  /** Monetary / funding value */
-  @Input() amount: string = '$4,000,000 mil';
+  data: ContinentSheet | null = null;
 
-  /** Organization count */
-  @Input() orgs: number = 45;
-
-  /** Education count */
-  @Input() education: number = 45;
+  private dataSvc = inject(DataService);
+  ngOnChanges(){
+    let temp = this.dataSvc.byContinent(this.key);
+    this.data = temp()
+  }
 }

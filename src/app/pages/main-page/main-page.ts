@@ -20,25 +20,7 @@ export class MainPageComponent implements OnInit, OnChanges {
   dataBySheet: WritableSignal<Record<string, any[]>> = signal({});
 
   ngOnInit(): void {
-    this.http.get(this.xlsxUrl, { responseType: 'blob' }).subscribe(async blob => {
-      // Read blob → ArrayBuffer
-      const buf = await blob.arrayBuffer();
 
-      // Parse workbook
-      const wb = XLSX.read(buf, { type: 'array' });
-
-      // Convert every sheet to JSON (header from first row)
-      const result: Record<string, any[]> = {};
-      wb.SheetNames.forEach(name => {
-        const ws = wb.Sheets[name];
-        // sheet_to_json infers headers from row 1; blank rows skipped by default
-        result[name] = XLSX.utils.sheet_to_json(ws, { defval: null });
-      });
-
-      console.log('All sheets:', wb.SheetNames);
-      console.log('Parsed data:', result);
-      this.dataBySheet.set(result);
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

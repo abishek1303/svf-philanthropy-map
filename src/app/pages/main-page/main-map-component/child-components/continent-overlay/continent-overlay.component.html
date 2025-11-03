@@ -21,9 +21,9 @@
     <!-- Country and amount -->
     <div class="flex items-start justify-between">
       <div>
-        <div class="text-[15px] font-semibold leading-5">{{ name }}</div>
+        <div class="text-[15px] font-semibold leading-5">{{ data?.continent }}</div>
         <div class="mt-0.5 text-[13px] font-semibold leading-4 opacity-95">
-          {{ amount }}
+          {{ data?.amount | currency:'USD':'symbol':'1.0-0' }}
         </div>
       </div>
     </div>
@@ -47,11 +47,11 @@
           <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
-        <span class="font-medium">{{ orgs }} Orgs</span>
+        <span class="font-medium">{{ data?.organizations }} Orgs</span>
       </div>
 
-      <div class="flex items-center gap-1.5">
-        <!-- trend icon -->
+      <!--div class="flex items-center gap-1.5">
+  
         <svg
           class="h-4 w-4 opacity-90"
           viewBox="0 0 24 24"
@@ -67,7 +67,7 @@
           <path d="M21 4v6h-6" />
         </svg>
         <span class="font-medium">{{ education }} Education</span>
-      </div>
+      </div-->
     </div>
   </div>
 </div>
