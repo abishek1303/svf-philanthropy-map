@@ -1,0 +1,65 @@
+/* ENTRY: fade + slight up + micro scale */
+@keyframes kf-fade-up {
+    from { opacity: 0; transform: translateY(8px) scale(0.985); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+  }
+  
+  /* IDLE: gentle float loop */
+  @keyframes kf-float-soft {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+  }
+  
+  /* SHINE: diagonal sweep once */
+  @keyframes kf-shine {
+    0%   { transform: translateX(-120%) rotate(18deg); opacity: 0; }
+    10%  { opacity: .15; }
+    100% { transform: translateX(120%)  rotate(18deg); opacity: 0; }
+  }
+  
+  /* Optional BG pan for the texture layer */
+  @keyframes kf-pan-bg {
+    0%   { background-position: right -40px top -10px; }
+    50%  { background-position: right -20px top -30px; }
+    100% { background-position: right -40px top -10px; }
+  }
+  
+  /* base */
+  .overlay-card {
+    will-change: transform, opacity, box-shadow;
+    transform-origin: center;
+  }
+  
+  /* ✅ Run BOTH animations together */
+  .enter-float {
+    animation:
+      kf-fade-up   460ms cubic-bezier(.22,1,.36,1) both   var(--delay, 0ms),
+      kf-float-soft 6s    ease-in-out              infinite calc(var(--delay, 0ms) + 420ms);
+  }
+  
+  /* hover lift */
+  .hover-lift { transition: transform 220ms cubic-bezier(.22,1,.36,1), box-shadow 220ms; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,.22); }
+  
+  /* one-time sheen */
+  .shine-once { position: relative; overflow: hidden; }
+  .shine-once::after {
+    content: '';
+    position: absolute;
+    inset: -30%;
+    transform: translateX(-120%) rotate(18deg);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+    filter: blur(2px);
+    pointer-events: none;
+    animation: kf-shine 1100ms ease-out 380ms 1;
+  }
+  
+  /* optional bg drift on your texture layer */
+  .pan-bg { animation: kf-pan-bg 18s linear infinite; }
+  
+  /* accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .enter-float, .shine-once::after, .pan-bg { animation: none !important; }
+    .hover-lift { transition: none !important; }
+  }
+  

@@ -1,8 +1,6 @@
 export const environment = {
   production: false,
   googleMapsApiKey: 'AIzaSyAI2k7B2z9OFbgSj3ULLqN4kL-WDCmTHzY',
-  csvURL:  'https://docs.google.com/spreadsheets/d/1-rmitdPdYorMW0lsRc0prttldTyRRBNf62F_WVO_eBg/export?format=csv&gid=2058938837',
-  // e.g. put this next to your csvURL in environments
   xlsxURL: 'https://docs.google.com/spreadsheets/d/1-rmitdPdYorMW0lsRc0prttldTyRRBNf62F_WVO_eBg/export?format=xlsx',
   mapId: '767b05226169a189635536c0',
   ContinentKeys: ["northamerica", "southamerica", "europe", "africa", "asia", "australia"],
@@ -10,7 +8,7 @@ export const environment = {
   {
     "northamerica" :{
       datasetID: "0daa9417-52c9-41d8-a5b7-1ddaadb3c7d6",
-      color: "#2ac4db",
+      color: "#1f8999",
       visible: true
 
     },
@@ -26,7 +24,7 @@ export const environment = {
     },
     "africa":{
       datasetID: "2e658a3d-a68a-4293-82ec-233d9974d4a7",
-      color: "#2ac4db",
+      color: "#939c1f",
       visible: false
     },
     "asia":{
@@ -36,7 +34,7 @@ export const environment = {
     },
     "australia":{
       datasetID: "27aac43c-e8a9-4660-96e3-91c129cb0063",
-      color: "#facc07",
+      color: "#d6c615",
       visible: true
     }
   }

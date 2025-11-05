@@ -3,6 +3,8 @@ import { environment } from '../../../../environments/environment';
 import { Loader } from '@googlemaps/js-api-loader';
 import { style } from '../../../Models/map-styles';
 import { CountryOverlayComponent as ContinentOverlayComponent } from './child-components/continent-overlay/continent-overlay.component';
+import { PanelComponent } from './child-components/panel.component/panel.component';
+import { DataService } from '../../../services/data.service';
 type LayerSpec = {
   data: google.maps.Data;
   color: string;
@@ -19,7 +21,8 @@ const CONTINENT_CENTERS: Record<string, google.maps.LatLngLiteral> = {
 
 @Component({
   selector: 'app-main-map-component',
-  imports: [],
+  standalone: true,
+  imports: [PanelComponent],
   templateUrl: './main-map-component.html',
   styleUrl: './main-map-component.scss'
 })
@@ -27,7 +30,8 @@ export class MainMapComponent implements OnInit {
   private readonly env = inject(EnvironmentInjector);
   map!: google.maps.Map;
   
-  
+dataSvc = inject(DataService);
+continentsData = this.dataSvc.continents();
 layers = new Map<string, LayerSpec>();
 labels:any = {};
   async ngOnInit() {
@@ -41,10 +45,17 @@ labels:any = {};
       center: { lat: 0, lng: 0 },
       zoom: 3,
       mapId: environment.mapId,
+      disableDefaultUI: true,
+      zoomControl: false,
+      minZoom: 2,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true
     });
     const continentDataSets:any = environment.ContinentDataSets; //remember to create a type for this
     environment.ContinentKeys.forEach(key => {
-      if(continentDataSets[key].visible){
+      let continentData = this.continentsData.find(i => i.key == key);
+      if(continentData?.amount && continentData?.amount > 0){
         this.LoadContinentGeoJson(continentDataSets[key].datasetID, continentDataSets[key].color);
         this.addContinentLabel(key, continentDataSets[key].color);
       }
@@ -75,7 +86,7 @@ labels:any = {};
       map: this.map,
       position: pos,
       content: comp.location.nativeElement as HTMLElement,
-      zIndex: 999,
+      zIndex: 999
     });
   }
 }
