@@ -9,7 +9,7 @@ import { DataService } from './services/data.service';
   styleUrl: './app.scss'
 })
 export class App  implements OnInit {
-  protected readonly title = signal('smf-philanthrophy-map');
+  protected readonly title = signal('Philanthrophy Map');
   dataSvc = inject(DataService);
   async ngOnInit() {
     console.log('boi')

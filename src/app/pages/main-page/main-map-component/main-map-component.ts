@@ -48,6 +48,7 @@ labels:any = {};
       disableDefaultUI: true,
       zoomControl: false,
       minZoom: 2,
+       gestureHandling: 'greedy',
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: true
